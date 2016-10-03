@@ -1,0 +1,80 @@
+
+apply plugin: 'java'
+apply plugin: "eclipse"
+apply plugin: "maven"
+//apply plugin: "org.sonarqube"
+apply plugin: 'jacoco'
+
+
+ext {
+    springVersion='4.3.3.RELEASE'
+    hystrixVersion='1.4.24'
+    jacksonVersion='2.8.3'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+buildscript {
+    repositories {
+        maven { url "http://plugins.gradle.org/m2/" }
+        jcenter { url 'http://jcenter.bintray.com/' }
+        maven { url 'http://repo1.maven.org/maven2' }
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+        classpath "org.sonarqube.gradle:gradle-sonarqube-plugin:1.1"
+    }
+
+}
+
+repositories {
+    jcenter { url 'http://jcenter.bintray.com/' }
+    maven { url 'http://repo1.maven.org/maven2' }
+}
+
+dependencies {
+    compile ('javax.servlet:javax.servlet-api:3.0.1')
+    /* Spring */
+//    compile ("org.springframework:spring-context:$springVersion") {
+//        exclude(module: 'commons-logging')
+//    }
+//    compile ("org.springframework:spring-beans:$springVersion") {
+//        exclude(module: 'commons-logging')
+//    }
+//    compile ('org.springframework.ws:spring-xml:2.2.1.RELEASE') {
+//        exclude(module: 'commons-logging')
+//    }
+//    compile ("org.springframework:spring-expression:$springVersion") {
+//        exclude(module: 'commons-logging')
+//    }
+    compile ("org.springframework:spring-webmvc:$springVersion") {
+        exclude(module: 'commons-logging')
+    }
+    compile ("org.springframework:spring-aop:$springVersion") {
+        exclude(module: 'commons-logging')
+    }
+//    compile ("org.springframework:spring-web:$springVersion") {
+//        exclude(module: 'commons-logging')
+//    }
+    //hystrix
+    compile "com.netflix.hystrix:hystrix-core:$hystrixVersion"
+//    compile "com.netflix.hystrix:hystrix-metrics-event-stream:$hystrixVersion"
+//    compile "com.netflix.hystrix:hystrix-request-servlet:$hystrixVersion"
+    compile("org.hibernate:hibernate-validator:5.2.4.Final")
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.2.0'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'ch.qos.logback:logback-core:1.1.7'
+    compile 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'com.nurkiewicz.asyncretry:asyncretry:0.0.7'
+//    compile ('org.jasypt:jasypt-spring31:1.9.1')
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion"
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+}
+
+test {
+    systemProperty "spring.profiles.active", "unit-test"
+    systemProperty "service.instance.name", rootProject.name
+    systemProperty "log.location", "build/logs"
+}
