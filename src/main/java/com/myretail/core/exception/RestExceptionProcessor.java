@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 
@@ -89,6 +90,17 @@ public class RestExceptionProcessor implements MessageSourceAware {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorInfo processRequestNotReadableError(HttpServletRequest req, HttpMessageNotReadableException ex) {
+        String errorMessage = messageSource.getMessage("requestnotreadable.exception", new Object[] { ex.getMessage() },
+                LocaleContextHolder.getLocale());
+        LOGGER.error(StringEscapeUtils.escapeJava(getErrorMessage("[Http Request Not Readable Exception]",errorMessage)), ex);
+
+        return new ErrorInfo(errorMessage, HttpStatus.BAD_REQUEST.toString());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorInfo processMethodArgumentTypeMismatchError(HttpServletRequest req, MethodArgumentTypeMismatchException ex) {
         String errorMessage = messageSource.getMessage("requestnotreadable.exception", new Object[] { ex.getMessage() },
                 LocaleContextHolder.getLocale());
         LOGGER.error(StringEscapeUtils.escapeJava(getErrorMessage("[Http Request Not Readable Exception]",errorMessage)), ex);
