@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -12,9 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myretail.core.exception.InternalServerErrorException;
 
 public class MapDataStore implements DataStore {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapDataStore.class);
     
     private Map<String, Map<String, Object>> dataStore;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+    
     public MapDataStore() {
         dataStore = new ConcurrentHashMap<>();
     }
@@ -24,7 +30,8 @@ public class MapDataStore implements DataStore {
         Resource resource = new ClassPathResource("data.json");
 
         try {
-            (new ObjectMapper()).readValue(resource.getInputStream(), new TypeReference<Map<String, Map<String,Object>>>() {});
+            dataStore = objectMapper.readValue(resource.getInputStream(), new TypeReference<Map<String, Map<String,Object>>>() {});
+            LOGGER.debug( "dataStore: {}", objectMapper.writeValueAsString(dataStore) );
         } catch (IOException e) {
             throw new InternalServerErrorException("Unable to read json data file" + dataJsonFile, e);
         }

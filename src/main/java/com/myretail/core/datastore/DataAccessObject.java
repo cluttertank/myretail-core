@@ -1,9 +1,13 @@
 package com.myretail.core.datastore;
 
-public interface DataAccessObject<T> {
+import java.util.Map;
 
-    T getItemById(String id);
+public interface DataAccessObject {
 
-    Boolean addItemAtId(String id, T item);
+    <T> T getItemById(String id, Class<T> clazz);
+
+    Map getItemById(String id);
+    
+    Boolean addItemAtId(String id, Object item);
     
 }
